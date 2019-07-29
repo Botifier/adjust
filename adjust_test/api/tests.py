@@ -47,6 +47,16 @@ class SampleDataSetViewTest(APITestCase):
                                                 spend=spend,
                                                 revenue=revenue,
                                             )
+                                            
+    def test_field_selection(self):
+        data = {
+            'fields': 'country,channel',
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), self.TOTAL_ENTRIES)
+        for entry in response.data:
+            self.assertEqual(set(entry.keys()), {'country', 'channel'})                                        
 
     def test_filtering(self):
         data = {
