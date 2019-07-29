@@ -105,7 +105,6 @@ class SampleDataSetViewTest(APITestCase):
         data = {
             'group': 'country',
             'fields': 'country,impressions',
-            'aggregation': 'impressions',
         }
         response = self.client.get(self.API_URL, data)
         self.assertEqual(len(response.data), len(self.TEST_DATA['countries']))
@@ -118,7 +117,6 @@ class SampleDataSetViewTest(APITestCase):
         data = {
             'group': 'country',
             'fields': 'country,revenue,spend',
-            'aggregation': 'revenue,spend',
         }
         response = self.client.get(self.API_URL, data)
         self.assertEqual(len(response.data), len(self.TEST_DATA['countries']))

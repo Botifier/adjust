@@ -26,22 +26,22 @@ class SampleDataSetView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = SampleDataSet.objects.all()
+        fields = self.request.query_params.get('fields')
         group_fields = self.request.query_params.get('group')
-        aggregation_fields = self.request.query_params.get('aggregation')
         if group_fields:
             queryset = queryset.values(*group_fields.split(','))
-            if aggregation_fields:
-                for field in aggregation_fields.split(','):
-                    if field == 'impressions':
-                        queryset = queryset.annotate(impressions=Sum('impressions'))
-                    elif field == 'clicks':
-                        queryset = queryset.annotate(clicks=Sum('clicks'))
-                    elif field == 'installs':
-                        queryset = queryset.annotate(installs=Sum('installs'))
-                    elif field == 'spend':
-                        queryset = queryset.annotate(spend=Sum('spend'))
-                    elif field == 'revenue':
-                        queryset = queryset.annotate(revenue=Sum('revenue'))
-                    elif field == 'cpi':
-                        queryset = queryset.annotate(cpi=Sum('spend')/Cast(Sum('installs'), FloatField()))
+            if fields:
+                fields = fields.split(',')
+                if 'cpi' in fields:
+                    queryset = queryset.annotate(cpi=Sum('spend')/Cast(Sum('installs'), FloatField()))
+                if 'impressions' in fields:
+                    queryset = queryset.annotate(impressions=Sum('impressions'))
+                if 'clicks' in fields:
+                    queryset = queryset.annotate(clicks=Sum('clicks'))
+                if 'installs' in fields:
+                    queryset = queryset.annotate(installs=Sum('installs'))
+                if 'spend' in fields:
+                    queryset = queryset.annotate(spend=Sum('spend'))
+                if 'revenue' in fields:
+                    queryset = queryset.annotate(revenue=Sum('revenue'))
         return queryset
