@@ -47,3 +47,24 @@ class SampleDataSetViewTest(APITestCase):
                                                 spend=spend,
                                                 revenue=revenue,
                                             )
+                                            
+    def test_filtering(self):
+        data = {
+            'country': 'country1',
+            'os': 'os1',
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # we removed 2*2 multiplier of the possibities by excluding half the countries and half the os
+        self.assertEqual(len(response.data), self.TOTAL_ENTRIES / 4)        
+        for entry in response.data:
+            self.assertEqual(entry['country'], 'country1')
+            self.assertEqual(entry['os'], 'os1')
+        
+        # Test negative filter
+        data = {
+            'country': 'non_existing_country',
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])                                            
