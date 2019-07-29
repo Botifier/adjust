@@ -4,7 +4,8 @@ from .models import SampleDataSet
 
 
 class SampleDataSetSerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = SampleDataSet
-            exclude = ('id',)
+    cpi = serializers.FloatField(default=0)
+    
+    class Meta:
+        model = SampleDataSet
+        exclude = ('id',)

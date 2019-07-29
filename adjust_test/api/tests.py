@@ -47,7 +47,7 @@ class SampleDataSetViewTest(APITestCase):
                                                 spend=spend,
                                                 revenue=revenue,
                                             )
-                                            
+
     def test_filtering(self):
         data = {
             'country': 'country1',
@@ -67,4 +67,26 @@ class SampleDataSetViewTest(APITestCase):
         }
         response = self.client.get(self.API_URL, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, [])                                            
+        self.assertEqual(response.data, [])       
+
+    def test_sorting(self):
+        data = {
+            'ordering': 'date,-channel,-country,-os,-impressions,-clicks,installs,spend,revenue'
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), self.TOTAL_ENTRIES)
+
+        expected = {
+            'date': self.TEST_DATA['dates'][0],
+            'channel': self.TEST_DATA['channels'][1],
+            'country': self.TEST_DATA['countries'][1],
+            'os': self.TEST_DATA['os'][1],
+            'impressions': self.TEST_DATA['impressions'][1],
+            'clicks': self.TEST_DATA['clicks'][1],
+            'installs': self.TEST_DATA['installs'][0],
+            'spend': self.TEST_DATA['spend'][0],
+            'revenue': self.TEST_DATA['revenue'][0],
+            'cpi': self.TEST_DATA['spend'][0]/self.TEST_DATA['installs'][0],
+        }
+        self.assertDictEqual(response.data[0], expected)                                     

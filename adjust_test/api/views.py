@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, filters
 
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
 
@@ -18,5 +18,6 @@ class SampleDataSetFilter(FilterSet):
 class SampleDataSetView(generics.ListAPIView):
     serializer_class = SampleDataSetSerializer
     queryset = SampleDataSet.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filter_class = SampleDataSetFilter
+    ordering_fields = '__all__'
