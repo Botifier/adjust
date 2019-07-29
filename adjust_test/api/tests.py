@@ -47,7 +47,7 @@ class SampleDataSetViewTest(APITestCase):
                                                 spend=spend,
                                                 revenue=revenue,
                                             )
-                                            
+
     def test_field_selection(self):
         data = {
             'fields': 'country,channel',
@@ -99,4 +99,34 @@ class SampleDataSetViewTest(APITestCase):
             'revenue': self.TEST_DATA['revenue'][0],
             'cpi': self.TEST_DATA['spend'][0]/self.TEST_DATA['installs'][0],
         }
-        self.assertDictEqual(response.data[0], expected)                                     
+        self.assertDictEqual(response.data[0], expected)        
+    
+    def test_single_aggregation(self):
+        data = {
+            'group': 'country',
+            'fields': 'country,impressions',
+            'aggregation': 'impressions',
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(len(response.data), len(self.TEST_DATA['countries']))
+        impression_types = self.TEST_DATA['impressions']
+        expected_impressions = self.TOTAL_ENTRIES / 4 * (impression_types[0] + impression_types[1])
+        self.assertEqual(response.data[0]['impressions'], expected_impressions)
+        self.assertEqual(response.data[1]['impressions'], expected_impressions)
+    
+    def test_multiple_aggregations(self):
+        data = {
+            'group': 'country',
+            'fields': 'country,revenue,spend',
+            'aggregation': 'revenue,spend',
+        }
+        response = self.client.get(self.API_URL, data)
+        self.assertEqual(len(response.data), len(self.TEST_DATA['countries']))
+        revenue_types = self.TEST_DATA['revenue']
+        expected_revenues = self.TOTAL_ENTRIES / 4 * (revenue_types[0] + revenue_types[1])
+        self.assertEqual(response.data[0]['revenue'], expected_revenues)
+        self.assertEqual(response.data[1]['revenue'], expected_revenues)
+        spend_types = self.TEST_DATA['spend']
+        expected_spend = self.TOTAL_ENTRIES / 4 * (spend_types[0] + spend_types[1])
+        self.assertEqual(response.data[0]['spend'], expected_spend)
+        self.assertEqual(response.data[1]['spend'], expected_spend)                             
