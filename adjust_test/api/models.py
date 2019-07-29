@@ -14,4 +14,6 @@ class SampleDataSet(models.Model):
 
     @property
     def cpi(self):
-        return self.spend / self.installs
+        if self.installs != 0:
+            return self.spend / self.installs
+        return 0

@@ -129,4 +129,22 @@ class SampleDataSetViewTest(APITestCase):
         spend_types = self.TEST_DATA['spend']
         expected_spend = self.TOTAL_ENTRIES / 4 * (spend_types[0] + spend_types[1])
         self.assertEqual(response.data[0]['spend'], expected_spend)
-        self.assertEqual(response.data[1]['spend'], expected_spend)                             
+        self.assertEqual(response.data[1]['spend'], expected_spend)     
+
+    def test_zero_installs_cpi(self):
+        obj = SampleDataSet.objects.create(
+            date=self.TEST_DATA['dates'][0],
+            channel=self.TEST_DATA['channels'][0],
+            country=self.TEST_DATA['countries'][0],
+            os=self.TEST_DATA['os'][0],
+            impressions=self.TEST_DATA['impressions'][0],
+            clicks=self.TEST_DATA['clicks'][0],
+            installs=0,
+            spend=self.TEST_DATA['spend'][0],
+            revenue=self.TEST_DATA['revenue'][0],
+        )
+        try:
+            cpi = obj.cpi
+            self.assertEqual(cpi, 0)
+        except ZeroDivisionError:
+            self.fail('0 installs should have 0 cpi')                        
